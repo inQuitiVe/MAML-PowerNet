@@ -1,11 +1,12 @@
 import torch 
 import torch.nn as nn
-import numpy as np
+
 from math import ceil
 
     
 class PowerNet(nn.Module):
     def __init__(self,in_channels,out_channels,kernel_size = 3):
+        super(PowerNet,self).__init__()
         
 
         self.conv1 = nn.Conv2d(in_channels=in_channels,out_channels=16,kernel_size=kernel_size)
@@ -18,27 +19,32 @@ class PowerNet(nn.Module):
 
         self.relu = nn.ReLU()
         
-        self.fc1 = nn.Linear(8*ceil(in_channels/4)*ceil(in_channels/4), 64)
+        self.fc1 = nn.Linear(8*2*2, 64)
         self.fc2 = nn.Linear(64, out_channels)
         
     def forward(self,x):
-
+        x = x.float()
+        # print(x.size())
         # Input CNN Layer  K*K*in_ch ==> (K/2)*(K/2)*16
         x = self.conv1(x)
+        # print(x.size())
         x = self.bn1(x)
         x = self.relu(x)
-        X = self.pool(x)
+        x= self.pool(x)
+        # print(x.size())
 
         # CNN Layer 2  (K/2)*(K/2)*16 ==> (K/4)*(K/4)*16
         x = self.conv2(x)
         x = self.bn1(x)
         x = self.relu(x)
-        X = self.pool(x)
+        x = self.pool(x)
+        # print(x.size())
 
         # CNN Layer 3  (K/4)*(K/4)*16 ==> (K/4)*(K/4)*8
         x = self.conv3(x)
         x = self.bn2(x)
         x = self.relu(x)
+        # print(x.size())
 
         # CNN Layer 3  (K/4)*(K/4)*8 ==> (K/4)*(K/4)*8
         x = self.conv4(x)
@@ -54,5 +60,9 @@ class PowerNet(nn.Module):
 
         # Output FC Layer 2  64 ==> out_ch
         x = self.fc2(x)
+
+        x=torch.squeeze(x)
+
+        # print(x)
 
         return x
