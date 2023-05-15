@@ -9,11 +9,11 @@ import math
 from typing import Tuple
 class Dataset_wo_time(Dataset):
 
-    def __init__(self,args,w=128,h=128):
+    def __init__(self,path,args,w=128,h=128):
         super(Dataset_wo_time).__init__()
         assert args.k%2 == 1  and args.k >=3
         assert w > (args.k-1)/2  and h > (args.k-1)/2
-        self.path = args.data_dir
+        self.path = path
         self.k = args.k
         # self.N = args.N
         self.l = args.l
@@ -57,7 +57,8 @@ class Dataset_wo_time(Dataset):
                 data_features, 
                 math.ceil(max(data_features["x_max"])), 
                 math.ceil(max(data_features["y_max"])), 
-                data_features.shape[0],
+                # data_features.shape[0],
+                1000,
                 35000,
                 args.l,
                 700
